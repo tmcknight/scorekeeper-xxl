@@ -13,7 +13,7 @@ export default class Player extends Component {
     this.state = {
       adjustmentAmount: 0,
       isAdjustingScore: false,
-      isEditing: player,
+      isEditing: player.isEditing,
       name: player.name,
       colorIndex: player.colorIndex
     }
