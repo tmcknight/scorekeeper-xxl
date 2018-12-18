@@ -19,6 +19,7 @@ button {
     font: inherit;
     cursor: pointer;
     text-transform: inherit;
+    margin:0;
 }
 button svg {
     margin-top:10px;
