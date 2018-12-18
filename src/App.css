@@ -1,83 +1,82 @@
-@import "https://fonts.googleapis.com/css?family=Open+Sans:800";
+@import "https://fonts.googleapis.com/css?family=Open+Sans:700";
 
-html, body, #root, input {
-    padding:0;
+html, body {
     margin:0;
-    background:#000;
-    color:#000;
-    font-size:40px;
-    font-family: "Open Sans", sans-serif;
-    text-transform: uppercase;
     height:100%;
-    box-sizing: border-box;
+    background-color:rgb(24, 24, 24);
 }
 
 #root {
-    padding:8px;
-}
-
-button, input[type="submit"], input[type="reset"] {
-	background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-    outline: inherit;
+    font-size:40px;
+    font-family: "Open Sans", sans-serif;
+    height:100%;
     text-transform: uppercase;
 }
 
-input[type="text"] {
-    outline:none;
+button {
+    color:inherit;
     border:none;
+    font: inherit;
+    cursor: pointer;
+    text-transform: inherit;
+}
+button svg {
+    margin-top:10px;
 }
 
-.sheet {
-    display:grid;
-    grid-template-columns: 1fr 5fr 1fr;
-    height:100%;
-    grid-gap:8px;
-}
-
-.sheet > .scores {
-    align-self: center;
+.scores-container {
+    max-width:1000px;
+    padding:10px;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .player {
-    display:grid;
-    grid-template-columns: 4fr 2fr 1fr 1fr;
-    grid-gap: 2px;
-    margin-bottom:8px;
+    display: flex;
 }
-.player:last-child {
-    margin-bottom:0;
+
+.player .name, .player .score {
+    padding:15px;
 }
-.player > .score {
-    text-align: center;
+
+.player .name {
+    flex:1;
+    text-align:left;
 }
-.score .small {
-    font-size:30px;
+
+input.name {
+    border:none;
+    outline:none;
+    font-size:inherit;
+    font-family: inherit;
+    text-transform: inherit;
+    padding:0;
+    margin:0;
 }
-.player > * {
-    background:#fefefe;
-    color:#000;
+
+.player .score {
+    min-width: 100px;
+    text-align:center;
+    margin: 0 2px;
+}
+
+.player .score .small {
+    font-size: 75%;
+}
+
+.change-score {
     padding:10px;
 }
-.name {
-    text-align: left;
+
+.add-player {
+    background:none;
+    color: #fefefe49
 }
 
-.buttons {
-    display:grid;
-    grid-auto-flow:column;
-    grid-template-rows: 1fr 1fr;
-    grid-gap:8px;
+.add-player:hover {
+    color:#fefefe
 }
 
-.buttons > button {
-    background:#999;
-    color:#000;
-}
 
 .backdrop {
     z-index: auto;
@@ -98,21 +97,4 @@ input[type="text"] {
     transform: translate(-50%, -50%);
     outline:none;
     color:#000;
-}
-
-.add-player {
-    display:grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-gap:5px;
-}
-.add-player > * {
-    padding: 10px;
-    grid-column-start: span 2;
-}
-
-.btn-player-cancel {
-    grid-column: 2 / 4;
-}
-.txt-add-player {
-    grid-column-start: span 4;
 }

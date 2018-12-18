@@ -1,16 +1,10 @@
 import React, { Component } from "react"
 import Player from "./Player"
 import "./App.css"
-import {
-  FaUserPlus,
-  FaVolume,
-  FaRedoAlt,
-  FaSortNumericUp,
-  FaSortNumericDown,
-  FaVolumeMute
-} from "react-icons/fa"
+import { IoIosAddCircle } from "react-icons/io"
 import EditPlayerModal from "./EditPlayerModal"
 import { Transition } from "react-spring"
+import PlayerList from "./PlayerList"
 
 export const colors = [
   "#FE4545",
@@ -32,7 +26,6 @@ class App extends Component {
     this.state = {
       showAddPlayer: false,
       sortDescending: true,
-      soundOn: true,
       players: [
         { id: 0, name: "Tom", score: 0, colorIndex: 0 },
         { id: 1, name: "Jess", score: 0, colorIndex: 6 },
@@ -70,17 +63,22 @@ class App extends Component {
     })
   }
 
-  addPlayer = (playerName = "New Player", selectedColorIndex) => {
+  addPlayer = (e, playerName = "New Player", selectedColorIndex) => {
     const id = +new Date()
+
+    if (!selectedColorIndex) {
+      selectedColorIndex = this.getLeastUsedColorIndex()
+    }
+
     const newPlayer = {
       id,
       score: 0,
       name: playerName,
-      colorIndex: selectedColorIndex
+      colorIndex: selectedColorIndex,
+      isEditing: true
     }
     this.setState({
-      players: [...this.state.players, newPlayer],
-      showAddPlayer: false
+      players: [...this.state.players, newPlayer]
     })
   }
 
@@ -155,64 +153,27 @@ class App extends Component {
   render() {
     return (
       <>
-        <div className="sheet">
-          <div className="buttons">
-            <button onClick={() => this.showAddPlayer()}>
-              <FaUserPlus size={75} />
-            </button>
-            <button onClick={() => ""}>
-              <FaRedoAlt size={75} />
-            </button>
-          </div>
-
-          <div className="scores">
-            <Transition
-              items={this.state.players}
-              keys={p => p.id}
-              from={{ opacity: 0 }}
-              enter={{ opacity: 1 }}
-              leave={{ opacity: 0 }}
-            >
-              {player => props => (
-                <Player
-                  key={player.id}
-                  player={player}
-                  onScoreChange={this.handleScoreChange}
-                  onSave={this.savePlayer}
-                  onRemove={this.removePlayer}
-                  onAdjustingScore={this.startedAdjustingScore}
-                  style={props}
-                />
-              )}
-            </Transition>
-          </div>
-
-          <div className="buttons">
-            <button onClick={this.toggleSort}>
-              {this.state.sortDescending ? (
-                <FaSortNumericUp size={75} />
-              ) : (
-                <FaSortNumericDown size={75} />
-              )}
-            </button>
-            <button onClick={this.toggleSound}>
-              {this.state.soundOn ? (
-                <FaVolume size={75} />
-              ) : (
-                <FaVolumeMute size={75} />
-              )}
-            </button>
-          </div>
+        <div className="scores-container">
+          <PlayerList
+            className="scores"
+            items={this.state.players}
+            keys={p => p.id}
+            config={{ mass: 3, tension: 150, friction: 30 }}
+          >
+            {player => (
+              <Player
+                player={player}
+                onScoreChange={this.handleScoreChange}
+                onSave={this.savePlayer}
+                onRemove={this.removePlayer}
+                onAdjustingScore={this.startedAdjustingScore}
+              />
+            )}
+          </PlayerList>
+          <button className="add-player" onClick={this.addPlayer}>
+            <IoIosAddCircle />
+          </button>
         </div>
-
-        {this.state.showAddPlayer && (
-          <EditPlayerModal
-            selectedColorIndex={this.state.newPlayerColorIndex || 0}
-            show={true}
-            onRemove={this.hideAddPlayer}
-            onSave={this.addPlayer}
-          />
-        )}
       </>
     )
   }

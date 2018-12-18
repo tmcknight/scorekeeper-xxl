@@ -1,17 +1,54 @@
 import React, { Component } from "react"
-import { FaMinus, FaPlus } from "react-icons/fa"
-import EditPlayerModal from "./EditPlayerModal"
+import { TiMinus, TiPlus, TiDeleteOutline, TiDelete } from "react-icons/ti"
 import { colors } from "./App"
+import Color from "color"
+import { IoIosRemove, IoIosTrash, IoIosRemoveCircle } from "react-icons/io"
 
 export default class Player extends Component {
   constructor(props) {
     super(props)
 
+    const { player } = props
+
     this.state = {
       adjustmentAmount: 0,
-      isAdjusting: false,
-      showEditModal: false
+      isAdjustingScore: false,
+      isEditing: player,
+      name: player.name,
+      colorIndex: player.colorIndex
     }
+
+    this.btnIncrease = React.createRef()
+    this.btnDecrease = React.createRef()
+  }
+
+  holdit(btn, action, start, speedup) {
+    var t
+    const originalStart = start
+
+    var repeat = function() {
+      action()
+      t = setTimeout(repeat, start)
+      start = start / speedup
+    }
+
+    btn.onmousedown = function() {
+      repeat()
+    }
+
+    btn.onmouseup = function() {
+      start = originalStart
+      clearTimeout(t)
+    }
+    btn.onmouseleave = function() {
+      start = originalStart
+      clearTimeout(t)
+    }
+  }
+
+  componentDidMount = () => {
+    this.holdit(this.btnIncrease.current, this.increaseScore, 1000, 1.4)
+    this.holdit(this.btnDecrease.current, this.decreaseScore, 1000, 1.4)
   }
 
   increaseScore = () => {
@@ -19,7 +56,7 @@ export default class Player extends Component {
     this.props.onAdjustingScore(this.props.player.id)
     this.setState(
       {
-        isAdjusting: true,
+        isAdjustingScore: true,
         adjustmentAmount: this.state.adjustmentAmount + 1
       },
       () => {
@@ -35,7 +72,7 @@ export default class Player extends Component {
     this.props.onAdjustingScore(this.props.player.id)
     this.setState(
       {
-        isAdjusting: true,
+        isAdjustingScore: true,
         adjustmentAmount: this.state.adjustmentAmount - 1
       },
       () => {
@@ -49,77 +86,97 @@ export default class Player extends Component {
   updateScore = () => {
     const newScore = this.props.player.score + this.state.adjustmentAmount
     this.setState({
-      isAdjusting: false,
+      isAdjustingScore: false,
       adjustmentAmount: 0
     })
     this.props.onScoreChange(this.props.player.id, newScore)
   }
 
-  handleSave = (name, colorIndex) => {
-    this.props.onSave(this.props.player.id, name, colorIndex)
-    this.hideEditModal()
-  }
-
-  showEditModal = () => {
+  startEditing = () => {
     this.setState({
-      showEditModal: true
+      isEditing: true
     })
   }
 
-  hideEditModal = () => {
+  endEditing = () => {
     this.setState({
-      showEditModal: false
+      isEditing: false
     })
+    this.props.onSave(
+      this.props.player.id,
+      this.state.name,
+      this.props.player.colorIndex
+    )
   }
 
   handleRemove = () => {
-    this.hideEditModal()
     this.props.onRemove(this.props.player.id)
   }
 
-  render() {
-    const { colorIndex, name, score } = this.props.player
-    const { isAdjusting, adjustmentAmount } = this.state
-    const sign =
-      adjustmentAmount >= 0 ? <FaPlus size={20} /> : <FaMinus size={20} />
+  handleNameChange = e => {
+    this.setState({
+      name: e.target.value
+    })
+  }
+
+  scoreContent() {
+    const { score } = this.props.player
+    const { adjustmentAmount } = this.state
+    const sign = adjustmentAmount >= 0 ? "+" : "-"
     const newScore = score + adjustmentAmount
+    if (this.state.isAdjustingScore) {
+      const items = [
+        { key: 0, className: "small", text: `${score} ${sign} ` },
+        { key: 1, text: Math.abs(adjustmentAmount) },
+        { key: 2, className: "small", text: ` = ${newScore}` }
+      ]
+
+      return items.map(i => <span {...i}>{i.text}</span>)
+    } else {
+      return this.props.player.score
+    }
+  }
+
+  render() {
+    const { colorIndex, name, isEditing } = this.state
+    const fontColor = Color(colors[colorIndex]).darken(0.8)
 
     const style = {
-      background: colors[colorIndex]
+      background: colors[colorIndex],
+      color: fontColor
     }
     return (
-      <div className="player" style={this.props.style}>
-        <button className="name" style={style} onClick={this.showEditModal}>
-          {name}
-        </button>
-        <div className="score" style={style}>
-          {isAdjusting ? (
-            <>
-              <span className="small">
-                {score} {sign}{" "}
-              </span>
-              {Math.abs(adjustmentAmount)}{" "}
-              <span className="small"> = {newScore}</span>
-            </>
-          ) : (
-            <>{score}</>
-          )}
-        </div>
-        <button style={style} onClick={() => this.decreaseScore()}>
-          <FaMinus />
-        </button>
-        <button style={style} onClick={() => this.increaseScore()}>
-          <FaPlus />
-        </button>
+      <div className="player">
+        {!name && (
+          <button className="delete" style={style} onClick={this.handleRemove}>
+            <IoIosRemoveCircle />
+          </button>
+        )}
 
-        <EditPlayerModal
-          name={this.props.player.name}
-          selectedColorIndex={this.props.player.colorIndex}
-          show={this.state.showEditModal}
-          onHide={this.hideEditModal}
-          onSave={this.handleSave}
-          onRemove={this.handleRemove}
-        />
+        {isEditing ? (
+          <input
+            style={style}
+            className="name"
+            value={name}
+            onBlur={this.endEditing}
+            onChange={this.handleNameChange}
+            autoFocus
+          />
+        ) : (
+          <button className="name" style={style} onClick={this.startEditing}>
+            {name}
+          </button>
+        )}
+
+        <div className="score" style={style}>
+          {this.scoreContent()}
+        </div>
+        <button className="change-score" style={style} ref={this.btnDecrease}>
+          <TiMinus />
+        </button>
+        <button className="change-score" style={style} ref={this.btnIncrease}>
+          <TiPlus />
+        </button>
       </div>
     )
   }
