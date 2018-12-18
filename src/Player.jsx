@@ -1,8 +1,8 @@
 import React, { Component } from "react"
-import { TiMinus, TiPlus, TiDeleteOutline, TiDelete } from "react-icons/ti"
+import { TiMinus, TiPlus } from "react-icons/ti"
 import { colors } from "./App"
 import Color from "color"
-import { IoIosRemove, IoIosTrash, IoIosRemoveCircle } from "react-icons/io"
+import { IoIosRemoveCircle } from "react-icons/io"
 
 export default class Player extends Component {
   constructor(props) {

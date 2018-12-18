@@ -2,8 +2,6 @@ import React, { Component } from "react"
 import Player from "./Player"
 import "./App.css"
 import { IoIosAddCircle } from "react-icons/io"
-import EditPlayerModal from "./EditPlayerModal"
-import { Transition } from "react-spring"
 import PlayerList from "./PlayerList"
 
 export const colors = [
@@ -158,6 +156,7 @@ class App extends Component {
             className="scores"
             items={this.state.players}
             keys={p => p.id}
+            heights={90}
             config={{ mass: 3, tension: 150, friction: 30 }}
           >
             {player => (
