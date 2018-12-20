@@ -11,7 +11,7 @@ const styles = {
   }
 }
 
-export default class PlayerList extends Component {
+export default class AnimatedList extends Component {
   static propTypes = {
     items: PropTypes.array,
     keys: PropTypes.func,

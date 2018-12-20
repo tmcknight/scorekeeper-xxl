@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import Player from "./Player"
 import "./App.css"
 import { IoIosAddCircle } from "react-icons/io"
-import PlayerList from "./PlayerList"
+import PlayerList from "./AnimatedList"
 
 export const colors = [
   "#FE4545",
@@ -149,29 +149,35 @@ class App extends Component {
   }
 
   render() {
+    const items = this.state.players.map(p => (
+      <Player
+        player={p}
+        key={p.id}
+        onScoreChange={this.handleScoreChange}
+        onSave={this.savePlayer}
+        onRemove={this.removePlayer}
+        onAdjustingScore={this.startedAdjustingScore}
+      />
+    ))
+
+    items.push(
+      <button key="buttonbar" className="add-player" onClick={this.addPlayer}>
+        <IoIosAddCircle />
+      </button>
+    )
+
     return (
       <>
         <div className="scores-container">
           <PlayerList
             className="scores"
-            items={this.state.players}
-            keys={p => p.id}
-            heights={90}
+            items={items}
+            keys={i => i.key}
+            heights={i => i.height || 90}
             config={{ mass: 3, tension: 150, friction: 30 }}
           >
-            {player => (
-              <Player
-                player={player}
-                onScoreChange={this.handleScoreChange}
-                onSave={this.savePlayer}
-                onRemove={this.removePlayer}
-                onAdjustingScore={this.startedAdjustingScore}
-              />
-            )}
+            {item => item}
           </PlayerList>
-          <button className="add-player" onClick={this.addPlayer}>
-            <IoIosAddCircle />
-          </button>
         </div>
       </>
     )
